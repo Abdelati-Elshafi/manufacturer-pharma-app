@@ -20,12 +20,14 @@ class SerialStatusUpdateGroup {
 }
 
 class CheckSerialStatusCall {
-  Future<ApiCallResponse> call() async {
+  Future<ApiCallResponse> call({
+    String? serial = '',
+  }) async {
     final baseUrl = SerialStatusUpdateGroup.getBaseUrl();
 
     final ffApiRequestBody = '''
 {
-"serial" : "######" 
+  "serial": "${escapeStringForJson(serial)}"
 }''';
     return ApiManager.instance.makeApiCall(
       callName: 'CheckSerialStatus',
