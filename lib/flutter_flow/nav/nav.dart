@@ -133,9 +133,10 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
           name: CancelShipmentPageWidget.routeName,
           path: CancelShipmentPageWidget.routePath,
           builder: (context, params) => CancelShipmentPageWidget(
-            shipedorders: params.getParam(
+            shipedorders: params.getParam<String>(
               'shipedorders',
               ParamType.String,
+              isList: true,
             ),
           ),
         ),

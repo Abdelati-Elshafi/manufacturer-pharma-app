@@ -458,9 +458,9 @@ class _MainpageWidgetState extends State<MainpageWidget> {
                             if ((_model.getOrdersApiResults?.succeeded ??
                                 true)) {
                               context.pushNamed(
-                                ShipmentPageWidget.routeName,
+                                CancelShipmentPageWidget.routeName,
                                 queryParameters: {
-                                  'completedorders': serializeParam(
+                                  'shipedorders': serializeParam(
                                     OrdersAPIsGroup.getOrderByUserCall.order(
                                       (_model.getShipedOrders?.jsonBody ?? ''),
                                     ),

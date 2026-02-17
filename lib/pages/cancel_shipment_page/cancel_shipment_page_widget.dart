@@ -32,7 +32,7 @@ class CancelShipmentPageWidget extends StatefulWidget {
     required this.shipedorders,
   });
 
-  final String? shipedorders;
+  final List<String>? shipedorders;
 
   static String routeName = 'CancelShipmentPage';
   static String routePath = '/cancelShipmentPage';
