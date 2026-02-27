@@ -811,8 +811,28 @@ class _CancelShipmentPageWidgetState extends State<CancelShipmentPageWidget> {
                         EdgeInsetsDirectional.fromSTEB(16.0, 0.0, 16.0, 24.0),
                     child: Container(
                       child: FFButtonWidget(
-                        onPressed: () {
-                          print('ConfirmButton pressed ...');
+                        onPressed: () async {
+                          var confirmDialogResponse = await showDialog<bool>(
+                                context: context,
+                                builder: (alertDialogContext) {
+                                  return AlertDialog(
+                                    title: Text('Close'),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () => Navigator.pop(
+                                            alertDialogContext, false),
+                                        child: Text('Cancel'),
+                                      ),
+                                      TextButton(
+                                        onPressed: () => Navigator.pop(
+                                            alertDialogContext, true),
+                                        child: Text('Confirm'),
+                                      ),
+                                    ],
+                                  );
+                                },
+                              ) ??
+                              false;
                         },
                         text: 'Cancel Shipment',
                         icon: Icon(
