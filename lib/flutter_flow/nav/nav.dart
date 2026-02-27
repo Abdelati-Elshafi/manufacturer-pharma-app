@@ -170,30 +170,13 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
               'product',
               ParamType.String,
             ),
-            serials: params.getParam<String>(
-              'serials',
+            orderno: params.getParam(
+              'orderno',
               ParamType.String,
-              isList: true,
             ),
-            serialsitemsCount: params.getParam<int>(
-              'serialsitemsCount',
-              ParamType.int,
-              isList: true,
-            ),
-            serialsitemstype: params.getParam<String>(
-              'serialsitemstype',
+            gtin: params.getParam(
+              'gtin',
               ParamType.String,
-              isList: true,
-            ),
-            serialscartonsCount: params.getParam<int>(
-              'serialscartonsCount',
-              ParamType.int,
-              isList: true,
-            ),
-            serialspalletsCount: params.getParam<int>(
-              'serialspalletsCount',
-              ParamType.int,
-              isList: true,
             ),
           ),
         )
@@ -323,6 +306,7 @@ class FFRoute {
           return transitionInfo.hasTransition
               ? CustomTransitionPage(
                   key: state.pageKey,
+                  name: state.name,
                   child: child,
                   transitionDuration: transitionInfo.duration,
                   transitionsBuilder:
@@ -340,7 +324,8 @@ class FFRoute {
                     child,
                   ),
                 )
-              : MaterialPage(key: state.pageKey, child: child);
+              : MaterialPage(
+                  key: state.pageKey, name: state.name, child: child);
         },
         routes: routes,
       );

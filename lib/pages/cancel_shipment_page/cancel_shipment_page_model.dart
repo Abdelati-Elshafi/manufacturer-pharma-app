@@ -35,10 +35,6 @@ class CancelShipmentPageModel
   String? ordersDropDownValue;
   FormFieldController<String>? ordersDropDownValueController;
   var sscc = '';
-  // State field(s) for testttt widget.
-  FocusNode? testtttFocusNode;
-  TextEditingController? testtttTextController;
-  String? Function(BuildContext, String?)? testtttTextControllerValidator;
   // Model for Loading component.
   late LoadingModel loadingModel;
   // Model for SideBar component.
@@ -54,9 +50,6 @@ class CancelShipmentPageModel
   @override
   void dispose() {
     headerModel.dispose();
-    testtttFocusNode?.dispose();
-    testtttTextController?.dispose();
-
     loadingModel.dispose();
     sideBarModel.dispose();
   }

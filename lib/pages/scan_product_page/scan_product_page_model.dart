@@ -1,11 +1,12 @@
-import '/components/header/header_widget.dart';
+import '/backend/api_requests/api_calls.dart';
 import '/components/loading/loading_widget.dart';
 import '/components/s_s_c_c_card/s_s_c_c_card_widget.dart';
 import '/components/scanning/scanning_widget.dart';
 import '/components/side_bar/side_bar_widget.dart';
 import '/components/test/test_widget.dart';
 import '/flutter_flow/flutter_flow_util.dart';
-import 'scan_product_page_widget.dart' show ScanProductPageWidget;
+import '/custom_code/actions/index.dart' as actions;
+import '/index.dart';
 import 'package:flutter/material.dart';
 
 class ScanProductPageModel extends FlutterFlowModel<ScanProductPageWidget> {
@@ -45,10 +46,10 @@ class ScanProductPageModel extends FlutterFlowModel<ScanProductPageWidget> {
 
   ///  State fields for stateful widgets in this page.
 
+  // Stores action output result for [Backend Call - API (ProductSerialsDetails)] action in ScanProductPage widget.
+  ApiCallResponse? productdetails;
   // Model for SideBar component.
   late SideBarModel sideBarModel;
-  // Model for Header component.
-  late HeaderModel headerModel;
   // Model for test component.
   late TestModel testModel;
   // Models for SSCCCard dynamic component.
@@ -57,12 +58,12 @@ class ScanProductPageModel extends FlutterFlowModel<ScanProductPageWidget> {
   late LoadingModel loadingModel;
   // Model for Scanning component.
   late ScanningModel scanningModel;
-  var code = '';
+  // Stores action output result for [Action Block - CheckAndAddSerial] action in Scanning widget.
+  String? scannedCode;
 
   @override
   void initState(BuildContext context) {
     sideBarModel = createModel(context, () => SideBarModel());
-    headerModel = createModel(context, () => HeaderModel());
     testModel = createModel(context, () => TestModel());
     sSCCCardModels = FlutterFlowDynamicModels(() => SSCCCardModel());
     loadingModel = createModel(context, () => LoadingModel());
@@ -72,10 +73,94 @@ class ScanProductPageModel extends FlutterFlowModel<ScanProductPageWidget> {
   @override
   void dispose() {
     sideBarModel.dispose();
-    headerModel.dispose();
     testModel.dispose();
     sSCCCardModels.dispose();
     loadingModel.dispose();
     scanningModel.dispose();
+  }
+
+  /// Action blocks.
+  Future<String?> checkAndAddSerial(
+    BuildContext context, {
+    required String? serial,
+    required List<String>? list,
+  }) async {
+    bool? alreadyScannedQr;
+
+    alreadyScannedQr = await actions.checkStringInList(
+      serial!,
+      list!.toList(),
+    );
+    if (alreadyScannedQr) {
+      var confirmDialogResponse = await showDialog<bool>(
+            context: context,
+            builder: (alertDialogContext) {
+              return AlertDialog(
+                title: Text('already exist'),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(alertDialogContext, false),
+                    child: Text('Cancel'),
+                  ),
+                  TextButton(
+                    onPressed: () => Navigator.pop(alertDialogContext, true),
+                    child: Text('Confirm'),
+                  ),
+                ],
+              );
+            },
+          ) ??
+          false;
+      return '';
+    } else {
+      var confirmDialogResponse = await showDialog<bool>(
+            context: context,
+            builder: (alertDialogContext) {
+              return AlertDialog(
+                title: Text('donot exist'),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(alertDialogContext, false),
+                    child: Text('Cancel'),
+                  ),
+                  TextButton(
+                    onPressed: () => Navigator.pop(alertDialogContext, true),
+                    child: Text('Confirm'),
+                  ),
+                ],
+              );
+            },
+          ) ??
+          false;
+      return serial;
+    }
+  }
+
+  Future backToOrderDetailesPage(
+    BuildContext context, {
+    required String? orderno,
+    required String? customer,
+  }) async {
+    context.pushNamed(
+      OrderDetailsPageWidget.routeName,
+      queryParameters: {
+        'orderNO': serializeParam(
+          widget!.orderno,
+          ParamType.String,
+        ),
+        'customer': serializeParam(
+          customer,
+          ParamType.String,
+        ),
+        'batchNo': serializeParam(
+          '6',
+          ParamType.String,
+        ),
+        'quantity': serializeParam(
+          '5',
+          ParamType.String,
+        ),
+      }.withoutNulls,
+    );
   }
 }

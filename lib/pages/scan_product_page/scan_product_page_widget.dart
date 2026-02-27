@@ -1,13 +1,15 @@
-import '/components/header/header_widget.dart';
+import '/backend/api_requests/api_calls.dart';
 import '/components/loading/loading_widget.dart';
 import '/components/s_s_c_c_card/s_s_c_c_card_widget.dart';
 import '/components/scanning/scanning_widget.dart';
 import '/components/side_bar/side_bar_widget.dart';
 import '/components/test/test_widget.dart';
+import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
+import '/flutter_flow/flutter_flow_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
-import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'scan_product_page_model.dart';
 export 'scan_product_page_model.dart';
 
@@ -47,19 +49,13 @@ class ScanProductPageWidget extends StatefulWidget {
   const ScanProductPageWidget({
     super.key,
     String? product,
-    required this.serials,
-    required this.serialsitemsCount,
-    required this.serialsitemstype,
-    required this.serialscartonsCount,
-    required this.serialspalletsCount,
+    required this.orderno,
+    required this.gtin,
   }) : this.product = product ?? 'Pharma A';
 
   final String product;
-  final List<String>? serials;
-  final List<int>? serialsitemsCount;
-  final List<String>? serialsitemstype;
-  final List<int>? serialscartonsCount;
-  final List<int>? serialspalletsCount;
+  final String? orderno;
+  final String? gtin;
 
   static String routeName = 'ScanProductPage';
   static String routePath = '/scanProductPage';
@@ -80,43 +76,43 @@ class _ScanProductPageWidgetState extends State<ScanProductPageWidget> {
 
     // On page load action.
     SchedulerBinding.instance.addPostFrameCallback((_) async {
-      for (int loop1Index = 0;
-          loop1Index < widget.serials!.length;
-          loop1Index++) {
-        final currentLoop1Item = widget.serials![loop1Index];
-        var confirmDialogResponse = await showDialog<bool>(
-              context: context,
-              builder: (alertDialogContext) {
-                return AlertDialog(
-                  title: Text(
-                      '${(widget.serialsitemsCount?.elementAtOrNull(loop1Index))?.toString()}|${(widget.serialscartonsCount?.elementAtOrNull(loop1Index))?.toString()}|${(widget.serialspalletsCount?.elementAtOrNull(loop1Index))?.toString()}'),
-                  actions: [
-                    TextButton(
-                      onPressed: () => Navigator.pop(alertDialogContext, false),
-                      child: Text('Cancel'),
-                    ),
-                    TextButton(
-                      onPressed: () => Navigator.pop(alertDialogContext, true),
-                      child: Text('Confirm'),
-                    ),
-                  ],
-                );
-              },
-            ) ??
-            false;
-        _model.totalCartons = _model.totalCartons +
-            valueOrDefault<int>(
-              widget.serialscartonsCount?.elementAtOrNull(valueOrDefault<int>(
-                loop1Index,
-                0,
-              )),
-              0,
-            );
-        _model.totalpallets = _model.totalpallets! +
-            (widget.serialspalletsCount!.elementAtOrNull(loop1Index))!;
-        _model.totalitems = _model.totalitems! +
-            (widget.serialsitemsCount!.elementAtOrNull(loop1Index))!;
+      _model.loadingIsVisable = true;
+      safeSetState(() {});
+      _model.productdetails =
+          await OrdersAPIsGroup.productSerialsDetailsCall.call(
+        orderNo: widget.orderno,
+        gtin: widget.gtin,
+        sscc: '0',
+      );
+
+      if ((_model.productdetails?.succeeded ?? true)) {
+        _model.scannedCodes = OrdersAPIsGroup.productSerialsDetailsCall
+            .serial(
+              (_model.productdetails?.jsonBody ?? ''),
+            )!
+            .toList()
+            .cast<String>();
+        safeSetState(() {});
       }
+      for (int loop1Index = 0;
+          loop1Index < _model.scannedCodes.length;
+          loop1Index++) {
+        final currentLoop1Item = _model.scannedCodes[loop1Index];
+        _model.totalCartons = _model.totalCartons +
+            OrdersAPIsGroup.productSerialsDetailsCall.totalCartons(
+              (_model.productdetails?.jsonBody ?? ''),
+            )!;
+        _model.totalpallets = _model.totalpallets! +
+            OrdersAPIsGroup.productSerialsDetailsCall.totalPallets(
+              (_model.productdetails?.jsonBody ?? ''),
+            )!;
+        _model.totalitems = _model.totalitems! +
+            OrdersAPIsGroup.productSerialsDetailsCall.totalItems(
+              (_model.productdetails?.jsonBody ?? ''),
+            )!;
+      }
+      _model.loadingIsVisable = false;
+      safeSetState(() {});
     });
   }
 
@@ -154,16 +150,6 @@ class _ScanProductPageWidgetState extends State<ScanProductPageWidget> {
               child: Column(
                 mainAxisSize: MainAxisSize.max,
                 children: [
-                  wrapWithModel(
-                    model: _model.headerModel,
-                    updateCallback: () => safeSetState(() {}),
-                    child: HeaderWidget(
-                      pagename: 'Scan',
-                      showMenu: () async {
-                        scaffoldKey.currentState!.openDrawer();
-                      },
-                    ),
-                  ),
                   Column(
                     mainAxisSize: MainAxisSize.max,
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -190,7 +176,7 @@ class _ScanProductPageWidgetState extends State<ScanProductPageWidget> {
                             EdgeInsetsDirectional.fromSTEB(5.0, 5.0, 5.0, 5.0),
                         child: Container(
                           width: double.infinity,
-                          height: 318.43,
+                          height: 394.29,
                           decoration: BoxDecoration(
                             color: Colors.white,
                             boxShadow: [
@@ -213,7 +199,8 @@ class _ScanProductPageWidgetState extends State<ScanProductPageWidget> {
                                   alignment: AlignmentDirectional(0.0, -1.0),
                                   child: Builder(
                                     builder: (context) {
-                                      final itemsNo = widget.serials!.toList();
+                                      final itemsNo =
+                                          _model.scannedCodes.toList();
 
                                       return ListView.separated(
                                         padding: EdgeInsets.zero,
@@ -238,25 +225,13 @@ class _ScanProductPageWidgetState extends State<ScanProductPageWidget> {
                                               key: Key(
                                                 'Keyy0n_${itemsNoItem}',
                                               ),
-                                              sscc: (widget.serials!
+                                              sscc: _model.scannedCodes
                                                   .elementAtOrNull(
-                                                      itemsNoIndex))!,
-                                              itemcount: (widget
-                                                  .serialsitemsCount!
-                                                  .elementAtOrNull(
-                                                      itemsNoIndex))!,
-                                              serialtype: (widget
-                                                  .serialsitemstype!
-                                                  .elementAtOrNull(
-                                                      itemsNoIndex))!,
-                                              palletcount: (widget
-                                                  .serialspalletsCount!
-                                                  .elementAtOrNull(
-                                                      itemsNoIndex))!,
-                                              cartooncount: (widget
-                                                  .serialscartonsCount!
-                                                  .elementAtOrNull(
-                                                      itemsNoIndex))!,
+                                                      itemsNoIndex)!,
+                                              itemcount: 9,
+                                              serialtype: 'Case',
+                                              palletcount: 9,
+                                              cartooncount: 9,
                                               delete: () async {
                                                 _model.removeFromScannedCodes(
                                                     itemsNoItem);
@@ -276,6 +251,100 @@ class _ScanProductPageWidgetState extends State<ScanProductPageWidget> {
                       ),
                     ],
                   ),
+                  Row(
+                    mainAxisSize: MainAxisSize.max,
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      Expanded(
+                        child: FFButtonWidget(
+                          onPressed: () async {
+                            await _model.backToOrderDetailesPage(
+                              context,
+                              orderno: widget.orderno,
+                              customer: '999',
+                            );
+                          },
+                          text: 'Cancel ',
+                          icon: Icon(
+                            Icons.cancel_rounded,
+                            size: 25.0,
+                          ),
+                          options: FFButtonOptions(
+                            width: 160.0,
+                            height: 50.0,
+                            padding: EdgeInsets.all(8.0),
+                            iconPadding: EdgeInsetsDirectional.fromSTEB(
+                                0.0, 0.0, 0.0, 0.0),
+                            color: Color(0xFFD32F2F),
+                            textStyle: FlutterFlowTheme.of(context)
+                                .titleMedium
+                                .override(
+                                  font: GoogleFonts.interTight(
+                                    fontWeight: FontWeight.bold,
+                                    fontStyle: FlutterFlowTheme.of(context)
+                                        .titleMedium
+                                        .fontStyle,
+                                  ),
+                                  color: Colors.white,
+                                  fontSize: 18.0,
+                                  letterSpacing: 0.0,
+                                  fontWeight: FontWeight.bold,
+                                  fontStyle: FlutterFlowTheme.of(context)
+                                      .titleMedium
+                                      .fontStyle,
+                                ),
+                            elevation: 3.0,
+                            borderSide: BorderSide(
+                              color: Colors.transparent,
+                            ),
+                            borderRadius: BorderRadius.circular(16.0),
+                          ),
+                        ),
+                      ),
+                      Flexible(
+                        child: FFButtonWidget(
+                          onPressed: () {
+                            print('ConfirmButton pressed ...');
+                          },
+                          text: 'Update',
+                          icon: Icon(
+                            Icons.upload_sharp,
+                            size: 25.0,
+                          ),
+                          options: FFButtonOptions(
+                            width: 160.0,
+                            height: 50.0,
+                            padding: EdgeInsets.all(8.0),
+                            iconPadding: EdgeInsetsDirectional.fromSTEB(
+                                0.0, 0.0, 0.0, 0.0),
+                            color: Color(0xFFD32F2F),
+                            textStyle: FlutterFlowTheme.of(context)
+                                .titleMedium
+                                .override(
+                                  font: GoogleFonts.interTight(
+                                    fontWeight: FontWeight.bold,
+                                    fontStyle: FlutterFlowTheme.of(context)
+                                        .titleMedium
+                                        .fontStyle,
+                                  ),
+                                  color: Colors.white,
+                                  fontSize: 18.0,
+                                  letterSpacing: 0.0,
+                                  fontWeight: FontWeight.bold,
+                                  fontStyle: FlutterFlowTheme.of(context)
+                                      .titleMedium
+                                      .fontStyle,
+                                ),
+                            elevation: 3.0,
+                            borderSide: BorderSide(
+                              color: Colors.transparent,
+                            ),
+                            borderRadius: BorderRadius.circular(16.0),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ],
               ),
             ),
@@ -286,29 +355,51 @@ class _ScanProductPageWidgetState extends State<ScanProductPageWidget> {
                 child: LoadingWidget(),
               ),
             if (true)
-              wrapWithModel(
-                model: _model.scanningModel,
-                updateCallback: () => safeSetState(() {}),
-                child: ScanningWidget(
-                  qraction: (scanType) async {
-                    _model.code = await FlutterBarcodeScanner.scanBarcode(
-                      '#C62828', // scanning line color
-                      'Cancel', // cancel button text
-                      true, // whether to show the flash icon
-                      ScanMode.QR,
-                    );
+              Padding(
+                padding: EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 0.0, 80.0),
+                child: wrapWithModel(
+                  model: _model.scanningModel,
+                  updateCallback: () => safeSetState(() {}),
+                  child: ScanningWidget(
+                    qraction: (scanType) async {
+                      var confirmDialogResponse = await showDialog<bool>(
+                            context: context,
+                            builder: (alertDialogContext) {
+                              return AlertDialog(
+                                title: Text('hjk'),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () => Navigator.pop(
+                                        alertDialogContext, false),
+                                    child: Text('Cancel'),
+                                  ),
+                                  TextButton(
+                                    onPressed: () =>
+                                        Navigator.pop(alertDialogContext, true),
+                                    child: Text('Confirm'),
+                                  ),
+                                ],
+                              );
+                            },
+                          ) ??
+                          false;
+                      _model.scannedCode = await _model.checkAndAddSerial(
+                        context,
+                        serial: '111',
+                        list: _model.scannedCodes,
+                      );
+                      _model.addToScannedCodes(_model.scannedCode!);
+                      safeSetState(() {});
+                      _model.addToNoPackForSSCCs(10);
+                      safeSetState(() {});
+                      _model.totalCartons = _model.totalCartons + 1;
+                      safeSetState(() {});
+                      _model.scanType = scanType;
+                      safeSetState(() {});
 
-                    _model.addToScannedCodes(_model.code);
-                    safeSetState(() {});
-                    _model.addToNoPackForSSCCs(10);
-                    safeSetState(() {});
-                    _model.totalCartons = _model.totalCartons + 1;
-                    safeSetState(() {});
-                    _model.scanType = scanType;
-                    safeSetState(() {});
-
-                    safeSetState(() {});
-                  },
+                      safeSetState(() {});
+                    },
+                  ),
                 ),
               ),
           ],

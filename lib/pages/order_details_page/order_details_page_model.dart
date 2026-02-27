@@ -1,7 +1,6 @@
 import '/backend/api_requests/api_calls.dart';
 import '/components/header/header_widget.dart';
 import '/components/loading/loading_widget.dart';
-import '/components/scanning/scanning_widget.dart';
 import '/components/side_bar/side_bar_widget.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import 'order_details_page_widget.dart' show OrderDetailsPageWidget;
@@ -67,15 +66,12 @@ class OrderDetailsPageModel extends FlutterFlowModel<OrderDetailsPageWidget> {
   late HeaderModel headerModel;
   // Model for Loading component.
   late LoadingModel loadingModel;
-  // Model for Scanning component.
-  late ScanningModel scanningModel;
 
   @override
   void initState(BuildContext context) {
     sideBarModel = createModel(context, () => SideBarModel());
     headerModel = createModel(context, () => HeaderModel());
     loadingModel = createModel(context, () => LoadingModel());
-    scanningModel = createModel(context, () => ScanningModel());
   }
 
   @override
@@ -83,6 +79,5 @@ class OrderDetailsPageModel extends FlutterFlowModel<OrderDetailsPageWidget> {
     sideBarModel.dispose();
     headerModel.dispose();
     loadingModel.dispose();
-    scanningModel.dispose();
   }
 }

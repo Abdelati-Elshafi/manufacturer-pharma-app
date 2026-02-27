@@ -2,7 +2,6 @@ import '/backend/api_requests/api_calls.dart';
 import '/components/header/header_widget.dart';
 import '/components/loading/loading_widget.dart';
 import '/components/product_details_card/product_details_card_widget.dart';
-import '/components/scanning/scanning_widget.dart';
 import '/components/side_bar/side_bar_widget.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
@@ -462,7 +461,7 @@ class _OrderDetailsPageWidgetState extends State<OrderDetailsPageWidget> {
                             children: [
                               Container(
                                 width: double.infinity,
-                                height: 327.8,
+                                height: 385.58,
                                 decoration: BoxDecoration(
                                   color: Colors.white,
                                   boxShadow: [
@@ -524,14 +523,6 @@ class _OrderDetailsPageWidgetState extends State<OrderDetailsPageWidget> {
                 model: _model.loadingModel,
                 updateCallback: () => safeSetState(() {}),
                 child: LoadingWidget(),
-              ),
-            if (true)
-              wrapWithModel(
-                model: _model.scanningModel,
-                updateCallback: () => safeSetState(() {}),
-                child: ScanningWidget(
-                  qraction: (scanType) async {},
-                ),
               ),
           ],
         ),

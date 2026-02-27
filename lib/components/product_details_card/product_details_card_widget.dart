@@ -1,4 +1,3 @@
-import '/backend/api_requests/api_calls.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/index.dart';
@@ -65,65 +64,28 @@ class _ProductDetailsCardWidgetState extends State<ProductDetailsCardWidget> {
           await widget.viewloadingcontrol?.call(
             true,
           );
-          _model.productdetails =
-              await OrdersAPIsGroup.productSerialsDetailsCall.call(
-            orderNo: widget.orderNo,
-            gtin: widget.gtin,
-            sscc: '0',
+
+          context.pushNamed(
+            ScanProductPageWidget.routeName,
+            queryParameters: {
+              'product': serializeParam(
+                widget.productname,
+                ParamType.String,
+              ),
+              'orderno': serializeParam(
+                widget.orderNo,
+                ParamType.String,
+              ),
+              'gtin': serializeParam(
+                widget.gtin,
+                ParamType.String,
+              ),
+            }.withoutNulls,
           );
 
-          if ((_model.productdetails?.succeeded ?? true)) {
-            context.pushNamed(
-              ScanProductPageWidget.routeName,
-              queryParameters: {
-                'serials': serializeParam(
-                  OrdersAPIsGroup.productSerialsDetailsCall.serial(
-                    (_model.productdetails?.jsonBody ?? ''),
-                  ),
-                  ParamType.String,
-                  isList: true,
-                ),
-                'product': serializeParam(
-                  widget.productname,
-                  ParamType.String,
-                ),
-                'serialsitemsCount': serializeParam(
-                  OrdersAPIsGroup.productSerialsDetailsCall.serialsitemsCount(
-                    (_model.productdetails?.jsonBody ?? ''),
-                  ),
-                  ParamType.int,
-                  isList: true,
-                ),
-                'serialsitemstype': serializeParam(
-                  OrdersAPIsGroup.productSerialsDetailsCall.serialsitemstype(
-                    (_model.productdetails?.jsonBody ?? ''),
-                  ),
-                  ParamType.String,
-                  isList: true,
-                ),
-                'serialscartonsCount': serializeParam(
-                  OrdersAPIsGroup.productSerialsDetailsCall.serialscartonsCount(
-                    (_model.productdetails?.jsonBody ?? ''),
-                  ),
-                  ParamType.int,
-                  isList: true,
-                ),
-                'serialspalletsCount': serializeParam(
-                  OrdersAPIsGroup.productSerialsDetailsCall.serialspalletsCount(
-                    (_model.productdetails?.jsonBody ?? ''),
-                  ),
-                  ParamType.int,
-                  isList: true,
-                ),
-              }.withoutNulls,
-            );
-
-            await widget.viewloadingcontrol?.call(
-              false,
-            );
-          }
-
-          safeSetState(() {});
+          await widget.viewloadingcontrol?.call(
+            false,
+          );
         },
         child: Container(
           width: double.infinity,
