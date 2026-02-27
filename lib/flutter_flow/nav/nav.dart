@@ -37,9 +37,13 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
           ? Builder(
               builder: (context) => Container(
                 color: Colors.transparent,
-                child: Image.asset(
-                  'assets/images/WhatsApp_Image_2025-09-19_at_14.19.11_169043a5.jpg',
-                  fit: BoxFit.contain,
+                child: Center(
+                  child: Image.asset(
+                    'assets/images/FreeSample-Vectorizer-io-WhatsApp_Image_2025-09-19_at_14.19.11_169043a5.svg',
+                    width: 100.0,
+                    height: 100.0,
+                    fit: BoxFit.fitWidth,
+                  ),
                 ),
               ),
             )
@@ -52,9 +56,13 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
               ? Builder(
                   builder: (context) => Container(
                     color: Colors.transparent,
-                    child: Image.asset(
-                      'assets/images/WhatsApp_Image_2025-09-19_at_14.19.11_169043a5.jpg',
-                      fit: BoxFit.contain,
+                    child: Center(
+                      child: Image.asset(
+                        'assets/images/FreeSample-Vectorizer-io-WhatsApp_Image_2025-09-19_at_14.19.11_169043a5.svg',
+                        width: 100.0,
+                        height: 100.0,
+                        fit: BoxFit.fitWidth,
+                      ),
                     ),
                   ),
                 )
